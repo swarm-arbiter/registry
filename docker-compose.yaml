@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  api:
+    image: registry:2.6.2
+    networks:
+      - revprox_ingress
+    volumes:
+      - '${SRV_APPDATA}/persistent/registry:/var/lib/registry/:rw'
+      - '${SRV_APPDATA}/resources/backend-htpasswd:/auth/.htpasswd:ro'
+    environment:
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=DockerRegistry
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/.htpasswd
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.docker.network=revprox_ingress"
+        - "traefik.port=5000"
+        - "traefik.backend=registry_api"
+        - "traefik.frontend.rule=Host:registry.terry.cloud;PathPrefix:/v2"
+
+  gui:
+    image: quiq/docker-registry-ui:0.7.3
+    networks:
+      - revprox_ingress
+    volumes:
+      - '${SRV_APPDATA}/resources/frontend-config.yml:/opt/config.yml:ro'
+      - '${SRV_APPDATA}/persistent/notifications:/opt/data:rw'
+    depends_on:
+      - api
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.docker.network=revprox_ingress"
+        - "traefik.port=8080"
+        - "traefik.backend=registry_gui"
+        - "traefik.frontend.rule=Host:registry.terry.cloud"
+
+networks:
+  revprox_ingress:
+    external: true
