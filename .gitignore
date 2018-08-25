@@ -2,7 +2,3 @@
 *#*#
 *.#*
 *~
-
-# Ignore extra appdata directories
-appdata/persistent
-appdata/logs
