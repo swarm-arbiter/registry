@@ -7,8 +7,8 @@ services:
     networks:
       - revprox_ingress
     volumes:
-      - '${SRV_APPDATA}/persistent/registry:/var/lib/registry/:rw'
-      - '${SRV_APPDATA}/resources/backend-htpasswd:/auth/.htpasswd:ro'
+      - '{{= stack.data_dir }}/persistent/registry:/var/lib/registry/:rw'
+      - '{{= stack.data_dir }}/resources/backend-htpasswd:/auth/.htpasswd:ro'
     environment:
       - REGISTRY_AUTH=htpasswd
       - REGISTRY_AUTH_HTPASSWD_REALM=DockerRegistry
@@ -26,8 +26,8 @@ services:
     networks:
       - revprox_ingress
     volumes:
-      - '${SRV_APPDATA}/resources/frontend-config.yml:/opt/config.yml:ro'
-      - '${SRV_APPDATA}/persistent/notifications:/opt/data:rw'
+      - '{{= stack.data_dir }}/resources/frontend-config.yml:/opt/config.yml:ro'
+      - '{{= stack.data_dir }}/persistent/notifications:/opt/data:rw'
     depends_on:
       - api
     deploy:
