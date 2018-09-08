@@ -1,5 +1,10 @@
 version: 0.1
 log:
+  accesslog:
+    disabled: false
+  level: debug
+  formatter: json
+
   fields:
     service: registry
 storage:
