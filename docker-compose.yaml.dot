@@ -9,10 +9,7 @@ services:
     volumes:
       - '{{= stack.data_dir }}/persistent/registry:/var/lib/registry/:rw'
       - '{{= stack.data_dir }}/resources/backend-htpasswd:/auth/.htpasswd:ro'
-    environment:
-      - REGISTRY_AUTH=htpasswd
-      - REGISTRY_AUTH_HTPASSWD_REALM=DockerRegistry
-      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/.htpasswd
+      - '{{= stack.data_dir }}/resources/backend-config.yml:/etc/docker/registry/config.yml'
     deploy:
       replicas: 1
       labels:
