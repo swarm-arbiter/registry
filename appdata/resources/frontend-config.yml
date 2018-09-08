@@ -17,7 +17,7 @@ registry_password: b69%UZ8p2a8KJtXU3&Q3wvp#
 
 # Event listener token.
 # The same one should be configured on Docker registry as Authorization Bearer token.
-event_listener_token: token
+event_listener_token: c6rce5up4mpukpj26h6qfxb3pkq5ze2tqdfe
 # Retention of records to keep.
 event_retention_days: 365
 
