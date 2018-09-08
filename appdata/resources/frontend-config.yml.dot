@@ -25,7 +25,7 @@ event_retention_days: 3650000
 #event_database_driver: sqlite3
 #event_database_location: /opt/data/registry_events.db
 event_database_driver: mysql
-event_database_location: registry_events_rw:{{= secrets.db_password }}@eventsdb/registry_events
+event_database_location: registry_events_rw:{{= secrets.db_password }}@tcp(eventsdb:3306)/registry_events
 
 # Cache refresh interval in minutes.
 # How long to cache repository list and tag counts.
