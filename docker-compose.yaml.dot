@@ -1,11 +1,12 @@
 version: '3'
 
 services:
-
+  # The backend registry that the docker CLI talks to when pushing/pulling
   api:
     image: registry:2.6.2
     networks:
       - revprox_ingress
+      - internal
     volumes:
       - '{{= stack.data_dir }}/persistent/registry:/var/lib/registry/:rw'
       - '{{= stack.data_dir }}/resources/backend-htpasswd:/auth/.htpasswd:ro'
@@ -18,10 +19,12 @@ services:
         - "traefik.backend=registry_api"
         - "traefik.frontend.rule=Host:registry.terry.cloud;PathPrefix:/v2"
 
+  # Frontend gui that can be used to examine the registry
   gui:
     image: quiq/docker-registry-ui:0.7.3
     networks:
       - revprox_ingress
+      - internal
     volumes:
       - '{{= stack.data_dir }}/resources/frontend-config.yml:/opt/config.yml:ro'
       - '{{= stack.data_dir }}/persistent/notifications:/opt/data:rw'
@@ -34,7 +37,10 @@ services:
         - "traefik.port=8080"
         - "traefik.backend=registry_gui"
         - "traefik.frontend.rule=Host:registry.terry.cloud"
+        - "traefik.frontend.auth.basic=jt:$$apr1$$rHk7BnYu$$Zyy31Rthx/YsjaAsagvc90"
 
 networks:
+  internal:
+    driver: overlay
   revprox_ingress:
     external: true
