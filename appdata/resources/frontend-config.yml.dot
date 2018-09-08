@@ -17,15 +17,15 @@ registry_password: b69%UZ8p2a8KJtXU3&Q3wvp#
 
 # Event listener token.
 # The same one should be configured on Docker registry as Authorization Bearer token.
-event_listener_token: c6rce5up4mpukpj26h6qfxb3pkq5ze2tqdfe
-# Retention of records to keep.
-event_retention_days: 365
+event_listener_token: {{= secrets.bearer_token }}
+# Retention of records to keep - 1000 years should do
+event_retention_days: 3650000
 
 # Event listener storage.
-event_database_driver: sqlite3
-event_database_location: data/registry_events.db
-# event_database_driver: mysql
-# event_database_location: user:password@tcp(localhost:3306)/docker_events
+#event_database_driver: sqlite3
+#event_database_location: /opt/data/registry_events.db
+event_database_driver: mysql
+event_database_location: registry_events_rw:{{= secrets.db_password }}@eventsdb/registry_events
 
 # Cache refresh interval in minutes.
 # How long to cache repository list and tag counts.

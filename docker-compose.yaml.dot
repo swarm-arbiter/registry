@@ -39,6 +39,24 @@ services:
         - "traefik.frontend.rule=Host:registry.terry.cloud"
         - "traefik.frontend.auth.basic=jt:$$apr1$$rHk7BnYu$$Zyy31Rthx/YsjaAsagvc90"
 
+  # Datbase used by gui container in order to allow for recording events (eg, image
+  # was pushed, pulled, etc - api container notifies an endpoint on the gui container,
+  # which then writes events into this db)
+  eventsdb:
+    image: mariadb:10.0.36
+    networks:
+      - internal
+    volumes:
+      - '{{ stack.data_dir}}/persistent/eventsdb:/var/lib/mysql:rw'
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_USER=registry_events_rw
+      - MYSQL_PASSWORD={{= secrets.db_password }}
+      - MYSQL_DATABASE=registry_events
+    deploy:
+      replicas: 1
+
+
 networks:
   internal:
     driver: overlay
