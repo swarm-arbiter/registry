@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS registry_events;
+CREATE USER     IF NOT EXISTS 'registry_events_rw'@'%' IDENTIFIED BY '{{= secrets.db_password }}';
+GRANT ALL ON `registry_events`.* TO 'registry_events_rw'@'%';

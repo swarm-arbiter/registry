@@ -13,6 +13,8 @@ services:
       - '{{= stack.data_dir }}/resources/backend-config.yml:/etc/docker/registry/config.yml'
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
       labels:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=5000"
@@ -27,12 +29,13 @@ services:
       - internal
     volumes:
       - '{{= stack.data_dir }}/resources/frontend-config.yml:/opt/config.yml:ro'
-      - '{{= stack.data_dir }}/persistent/notifications:/opt/data:rw'
     depends_on:
       - api
       - eventsdb
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
       labels:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=8080"
@@ -44,18 +47,18 @@ services:
   # was pushed, pulled, etc - api container notifies an endpoint on the gui container,
   # which then writes events into this db)
   eventsdb:
-    image: mariadb:10.0.36
+    image: mariadb:10.3.9
     networks:
       - internal
     volumes:
       - '{{= stack.data_dir}}/persistent/eventsdb:/var/lib/mysql:rw'
+      - '{{= stack.data_dir}}/resources/init_events_db.sql:/docker-entrypoint-initdb.d/init_events_db.sql:ro'
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=1
-      - MYSQL_USER=registry_events_rw
-      - MYSQL_PASSWORD={{= secrets.db_password }}
-      - MYSQL_DATABASE=registry_events
+      - MYSQL_ROOT_PASSWORD={{= secrets.db_root_password }}
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
 
 
 networks:
