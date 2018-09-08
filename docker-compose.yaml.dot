@@ -30,6 +30,7 @@ services:
       - '{{= stack.data_dir }}/persistent/notifications:/opt/data:rw'
     depends_on:
       - api
+      - eventsdb
     deploy:
       replicas: 1
       labels:
@@ -47,7 +48,7 @@ services:
     networks:
       - internal
     volumes:
-      - '{{ stack.data_dir}}/persistent/eventsdb:/var/lib/mysql:rw'
+      - '{{= stack.data_dir}}/persistent/eventsdb:/var/lib/mysql:rw'
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=1
       - MYSQL_USER=registry_events_rw
