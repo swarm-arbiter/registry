@@ -1,40 +1,68 @@
 version: '3'
 
 services:
-
+  # The backend registry that the docker CLI talks to when pushing/pulling
   api:
     image: registry:2.6.2
     networks:
       - revprox_ingress
+      - internal
     volumes:
       - '{{= stack.data_dir }}/persistent/registry:/var/lib/registry/:rw'
       - '{{= stack.data_dir }}/resources/backend-htpasswd:/auth/.htpasswd:ro'
       - '{{= stack.data_dir }}/resources/backend-config.yml:/etc/docker/registry/config.yml'
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
       labels:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=5000"
         - "traefik.backend=registry_api"
         - "traefik.frontend.rule=Host:registry.terry.cloud;PathPrefix:/v2"
 
+  # Frontend gui that can be used to examine the registry
   gui:
     image: quiq/docker-registry-ui:0.7.3
     networks:
       - revprox_ingress
+      - internal
     volumes:
       - '{{= stack.data_dir }}/resources/frontend-config.yml:/opt/config.yml:ro'
-      - '{{= stack.data_dir }}/persistent/notifications:/opt/data:rw'
     depends_on:
       - api
+      - eventsdb
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
       labels:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=8080"
         - "traefik.backend=registry_gui"
         - "traefik.frontend.rule=Host:registry.terry.cloud"
+        - "traefik.frontend.auth.basic=jt:$$apr1$$rHk7BnYu$$Zyy31Rthx/YsjaAsagvc90"
+
+  # Datbase used by gui container in order to allow for recording events (eg, image
+  # was pushed, pulled, etc - api container notifies an endpoint on the gui container,
+  # which then writes events into this db)
+  eventsdb:
+    image: mariadb:10.3.9
+    networks:
+      - internal
+    volumes:
+      - '{{= stack.data_dir}}/persistent/eventsdb:/var/lib/mysql:rw'
+      - '{{= stack.data_dir}}/resources/init_events_db.sql:/docker-entrypoint-initdb.d/init_events_db.sql:ro'
+    environment:
+      - MYSQL_ROOT_PASSWORD={{= secrets.db_root_password }}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
 
 networks:
+  internal:
+    driver: overlay
   revprox_ingress:
     external: true
