@@ -32,7 +32,7 @@ event_database_location: registry_events_rw:{{= secrets.db_password }}@tcp(event
 cache_refresh_interval: 10
 
 # If users can delete tags. If set to False, then only admins listed below.
-anyone_can_delete: false
+anyone_can_delete: true
 # Users allowed to delete tags.
 # This should be sent via X-WEBAUTH-USER header from your proxy.
 admins: []
