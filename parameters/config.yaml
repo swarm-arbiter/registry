@@ -1,0 +1,7 @@
+config:
+  # Domain to push/pull images from
+  registry_domain : registry.example.com
+
+  # Domain to view web interface of registry contents
+  # Note: May be same as registry_domain, since API is under /v2/ path
+  gui_domain      : registry.example.com

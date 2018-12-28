@@ -19,7 +19,7 @@ services:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=5000"
         - "traefik.backend=registry_api"
-        - "traefik.frontend.rule=Host:registry.terry.cloud;PathPrefix:/v2"
+        - "traefik.frontend.rule=Host:{{= config.registry_domain }};PathPrefix:/v2"
 
   # Frontend gui that can be used to examine the registry
   gui:
@@ -40,8 +40,8 @@ services:
         - "traefik.docker.network=revprox_ingress"
         - "traefik.port=8080"
         - "traefik.backend=registry_gui"
-        - "traefik.frontend.rule=Host:registry.terry.cloud"
-        - "traefik.frontend.auth.basic=jt:$$apr1$$rHk7BnYu$$Zyy31Rthx/YsjaAsagvc90"
+        - "traefik.frontend.rule=Host:{{= config.gui_domain }}"
+        - "traefik.frontend.auth.basic.users={{= secrets.backend_users.join(',').replace(/\$/g, '$$$$') }}"
 
   # Datbase used by gui container in order to allow for recording events (eg, image
   # was pushed, pulled, etc - api container notifies an endpoint on the gui container,

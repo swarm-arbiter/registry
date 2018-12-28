@@ -13,7 +13,7 @@ verify_tls: false
 # If token authentication service is enabled, it will be auto-discovered and those credentials
 # will be used to obtain access tokens.
 registry_username: frontend
-registry_password: b69%UZ8p2a8KJtXU3&Q3wvp#
+registry_password: {{= secrets.frontend_token }}
 
 # Event listener token.
 # The same one should be configured on Docker registry as Authorization Bearer token.

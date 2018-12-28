@@ -11,7 +11,3 @@
 	 Need to run '/bin/registry garbage-collect /etc/docker/registry/config.yml' from within the registry container in order to clean up blobs which are not referred to by any tag.
 
 	 This should be done periodically on a cron job or similar
-
-** Password Not In Secrets
-
-	 In order for the frontend GUI container to connect to the backend container it is required that the frontend has a login that it can use. This is stored in =appdata/resources/frontend-config.yml.dot=, and a hashed version in =backend-htpasswd.dot= -> ideally we would store the plain text in the secrets.yaml parameter file and then hash it as part of the dot template
